@@ -18,7 +18,7 @@ public class Create implements Command {
         TextChannel textChannel = event.getTextChannel();
 
         if (DataHandler.onGoingGames.containsKey(textChannel)) {
-            textChannel.sendMessage("A game is already ongoing in this text channel").queue();
+            textChannel.sendMessage("A game is already ongoing in this text channel.").queue();
         }
         else {
             DataHandler.addMember(leader.getUser());

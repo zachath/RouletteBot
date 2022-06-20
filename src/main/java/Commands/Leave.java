@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import util.DataHandler;
 
-//TODO: Fix null warning
 public class Leave implements Command {
     @Override
     public void run(MessageReceivedEvent event) {
@@ -19,22 +18,22 @@ public class Leave implements Command {
         Game game = DataHandler.onGoingGames.get(textChannel);
 
         if (game == null) {
-            textChannel.sendMessage("No game here mate").queue();
+            textChannel.sendMessage("No game here.").queue();
         }
         else if (!(game.contains(member))) {
-            textChannel.sendMessage("You are not in a game").queue();
+            textChannel.sendMessage(String.format("You are not in a game %s.", member.getAsMention())).queue();
         }
         else {
-            textChannel.sendMessage(String.format("%s has left the game", member.getEffectiveName())).queue();
+            textChannel.sendMessage(String.format("%s has left the game.", member.getEffectiveName())).queue();
 
             game.dropPlayer(member);
 
             if (game.getPlayers().size() == 0) {
-                textChannel.sendMessage("All players have left the game, game cancelled").queue();
+                textChannel.sendMessage("All players have left the game, game cancelled.").queue();
                 DataHandler.onGoingGames.remove(textChannel);
             }
             else if (member.equals(game.getLeader())) {
-                textChannel.sendMessage("Leader has left, new leader: " + game.newLeader()).queue();
+                textChannel.sendMessage(String.format("Leader has left, new leader: %s", game.newLeader())).queue();
             }
         }
     }

@@ -18,14 +18,14 @@ public class End implements Command {
         Game game = DataHandler.onGoingGames.get(textChannel);
 
         if (game == null) {
-            textChannel.sendMessage("No game here mate").queue();
+            textChannel.sendMessage("No game here.").queue();
         }
         else if (!(game.getLeader().equals(member))) {
-            textChannel.sendMessage(String.format("You may not end this game, current leader is: %s", game.getLeader().getEffectiveName())).queue();
+            textChannel.sendMessage(String.format("You may not end this game, current leader is: %s.", game.getLeader().getEffectiveName())).queue();
         }
         else {
             DataHandler.onGoingGames.remove(textChannel);
-            textChannel.sendMessage(String.format("The game has been cancelled by %s", member.getEffectiveName())).queue();
+            textChannel.sendMessage(String.format("The game has been cancelled by %s.", member.getEffectiveName())).queue();
         }
     }
 

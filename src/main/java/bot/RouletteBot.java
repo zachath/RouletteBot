@@ -24,7 +24,6 @@ public class RouletteBot extends ListenerAdapter {
     private static final Leave LEAVE_COMMAND = new Leave();
     private static final Pull PULL_COMMAND = new Pull();
 
-    //args[0] -> Discord token, args[1] -> owner id
     public static void main (String[] args) throws Exception {
         if (args.length != 2) {
             System.out.println("The discord token and the id of the owner must be specified in the command line.");
@@ -46,7 +45,6 @@ public class RouletteBot extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        System.out.println("Message Received!");
         String content = event.getMessage().getContentRaw();
 
         if (event.getAuthor().isBot()) {

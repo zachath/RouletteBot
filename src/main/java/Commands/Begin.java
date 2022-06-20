@@ -17,26 +17,26 @@ public class Begin implements Command {
 
         if (game != null) {
             if (game.isLive()) {
-                textChannel.sendMessage("Game already in process").queue();
+                textChannel.sendMessage("Game already in process.").queue();
             }
             else {
                 Member leader = game.getLeader();
 
                 if (!(leader.equals(member))) {
-                    textChannel.sendMessage("Only available to leader, which is " + leader.getAsMention()).queue();
+                    textChannel.sendMessage(String.format("Only available to leader, which is %s.", leader.getAsMention())).queue();
                 }
                 else {
                     game.goLive();
-                    textChannel.sendMessage(String.format("Game has begun\nCurrent player is %S", game.getCurrentPlayer().getAsMention())).queue();
+                    textChannel.sendMessage(String.format("Game has begun\nCurrent player is %s.", game.getCurrentPlayer().getAsMention())).queue();
 
                     if (game.getPlayers().size() == 1) {
-                        textChannel.sendMessage("Singleplayer russian roulette, the saddest game known to man").queue();
+                        textChannel.sendMessage("Single-player russian roulette, the saddest game known to man.").queue();
                     }
                 }
             }
         }
         else {
-            textChannel.sendMessage("No game here mate").queue();
+            textChannel.sendMessage("No game here.").queue();
         }
     }
 
