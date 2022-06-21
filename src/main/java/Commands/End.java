@@ -9,6 +9,10 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import util.DataHandler;
 
+/**
+ * Ends a game, called by ?e
+ * Only the leader may end a game.
+ */
 public class End implements Command {
     @Override
     public void run(MessageReceivedEvent event) {

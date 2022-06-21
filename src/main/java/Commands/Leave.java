@@ -9,6 +9,10 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import util.DataHandler;
 
+/**
+ * To leave a game, called by ?l
+ * Game ends if all players leave, if leader leaves a new leader is chosen.
+ */
 public class Leave implements Command {
     @Override
     public void run(MessageReceivedEvent event) {

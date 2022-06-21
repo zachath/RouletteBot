@@ -13,9 +13,13 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 public class RouletteBot extends ListenerAdapter {
     public static final String PREFIX = "?";
 
+    //Used for eventual admin commands, to recognize the owner of the bot. Given as first runtime parameter.
     private static String OWNER_ID;
+
+    //Discord token required to run the bot. Given as second runtime parameter.
     private static String TOKEN;
 
+    //All available commands.
     private static final Create CREATE_COMMAND = new Create();
     private static final Begin BEGIN_COMMAND = new Begin();
     private static final End END_COMMAND = new End();
@@ -43,10 +47,15 @@ public class RouletteBot extends ListenerAdapter {
         System.out.println("Build Finished!");
     }
 
+    /**
+     * Parses the input and runs the corresponding event,
+     * @param event message event received.
+     */
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         String content = event.getMessage().getContentRaw();
 
+        //Ignore other bots.
         if (event.getAuthor().isBot()) {
             return;
         }

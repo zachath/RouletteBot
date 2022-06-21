@@ -10,10 +10,18 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import util.DataHandler;
 
+/**
+ * To pull the trigger, called by ?p
+ */
 public class Pull implements Command {
     private static final int DEFAULT_BET = 50;
 
 
+    /**
+     * Extracts the bet from the string, at exception default is used.
+     * @param s String to parse
+     * @return bet amount.
+     */
     private int getBet(String s) {
         System.out.println(s);
         if (s.equals("")) {

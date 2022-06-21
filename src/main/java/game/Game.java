@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Represents a individual game.
+ */
 public class Game {
     private final static int PLAYER_LIMIT = 3;
     private final static int CYLINDER_SIZE = 6;

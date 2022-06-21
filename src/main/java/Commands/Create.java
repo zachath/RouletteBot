@@ -10,6 +10,9 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import util.DataHandler;
 
+/**
+ * Creates a game, called by ?c
+ */
 public class Create implements Command {
     @Override
     public void run(MessageReceivedEvent event) {

@@ -7,6 +7,9 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import util.DataHandler;
 
+/**
+ * Begins a game, called by ?b
+ */
 public class Begin implements Command {
     @Override
     public void run(MessageReceivedEvent event) {

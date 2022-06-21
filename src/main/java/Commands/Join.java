@@ -9,6 +9,9 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import util.DataHandler;
 
+/**
+ *  To join a game, called by ?j
+ */
 public class Join implements Command {
     @Override
     public void run(MessageReceivedEvent event) {
