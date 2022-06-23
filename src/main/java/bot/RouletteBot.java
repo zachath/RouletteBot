@@ -28,6 +28,8 @@ public class RouletteBot extends ListenerAdapter {
     private static final Leave LEAVE_COMMAND = new Leave();
     private static final Pull PULL_COMMAND = new Pull();
 
+    public static final int START_ACCOUNT_VALUE = 500;
+
     public static void main (String[] args) throws Exception {
         if (args.length != 2) {
             System.out.println("The discord token and the id of the owner must be specified in the command line.");

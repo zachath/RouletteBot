@@ -12,17 +12,10 @@ import util.DataHandler;
 /**
  *
  */
-//TODO: Implement
+//TODO: Implement (includes database)
 public class Info implements Command {
     @Override
     public void run(MessageReceivedEvent event) {
-        TextChannel textChannel = event.getTextChannel();
-        Member member = event.getMember();
-
-        DataHandler.addMember(member.getUser());
-
-        //Account account = DataHandler.memberAccounts.get(member.getUser());
-        //textChannel.sendMessage("Current Account value: " + account.getValue()).queue();
     }
 
     @Override

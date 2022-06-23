@@ -24,7 +24,6 @@ public class Create implements Command {
             textChannel.sendMessage("A game is already ongoing in this text channel.").queue();
         }
         else {
-            DataHandler.addMember(leader.getUser());
             Game game = new Game(leader, guild, textChannel);
             DataHandler.onGoingGames.put(textChannel, game);
 

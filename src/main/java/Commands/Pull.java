@@ -41,7 +41,6 @@ public class Pull implements Command {
     @Override
     public void run(MessageReceivedEvent event) {
         Member member = event.getMember();
-        //Account memberAccount = DataCollection.memberAccounts.get(member.getUser());
         TextChannel textChannel = event.getTextChannel();
         Game game = DataHandler.onGoingGames.get(textChannel);
 
@@ -68,6 +67,7 @@ public class Pull implements Command {
                 if (dead) {
                     game.dropPlayer(currentPlayer);
                     textChannel.sendMessage("BOOM!, ya dead.").queue();
+                    //TODO: (database)
                     //memberAccount.addValue(-bet);
                     textChannel.sendMessage(String.format("You lost %d", bet)).queue();
 
@@ -78,6 +78,7 @@ public class Pull implements Command {
                         if (game.getType() == TypeOfGame.MULTIPLE) {
                             currentPlayer = game.getCurrentPlayer();
                             textChannel.sendMessage(String.format("Game over %s is the winner, your account value has been doubled.", currentPlayer.getAsMention())).queue();
+                            //TODO: (database)
                             //memberAccount = DataCollection.memberAccounts.get(currentPlayer.getUser());
                             //memberAccount.addValue(memberAccount.getValue());
                         }
@@ -89,9 +90,11 @@ public class Pull implements Command {
                 }
                 else {
                     textChannel.sendMessage("\"Click\"").queue();
+                    //TODO: (database)
                     //memberAccount.addValue(bet);
 
                     if (game.isFinished()) {
+                        //TODO: (database)
                         //memberAccount.addValue(memberAccount.getValue());
                         textChannel.sendMessage("You win! Your account value has been doubled.").queue();
                         DataHandler.onGoingGames.remove(textChannel);

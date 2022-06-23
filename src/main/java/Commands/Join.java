@@ -27,7 +27,6 @@ public class Join implements Command {
             textChannel.sendMessage(String.format("You have already joined %s", member.getAsMention())).queue();
         }
         else if (!(game.addPlayer(member))) {
-            DataHandler.addMember(member.getUser());
             textChannel.sendMessage(String.format("The Game is full and waiting to start\n%s may use %s to start the game.", game.getLeader().getAsMention(), getCommandShortHand())).queue();
         }
         else {

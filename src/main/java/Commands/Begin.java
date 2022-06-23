@@ -15,7 +15,6 @@ public class Begin implements Command {
     public void run(MessageReceivedEvent event) {
         Member member = event.getMember();
         Game game = DataHandler.onGoingGames.get(event.getTextChannel());
-        DataHandler.addMember(member.getUser());
         TextChannel textChannel = event.getTextChannel();
 
         if (game != null) {
