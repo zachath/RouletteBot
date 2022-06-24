@@ -5,6 +5,7 @@ package util;
 import bot.RouletteBot;
 import game.Game;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -27,12 +28,12 @@ public class DataHandler {
 
     /**
      * Add user to the database.
-     * @param username of the user.
+     * @param user user to add.
      * @return if the user has been added or not.
      */
-    public static boolean addUser(String username) {
-        if (getDataBaseUser(username) == null) {
-            executeNonResultQuery(String.format("INSERT INTO USERS VALUES (NULL, %s, %d, 0, 0);", formatStringValue(username), RouletteBot.START_ACCOUNT_VALUE));
+    public static boolean addUser(User user) {
+        if (getDataBaseUser(user) == null) {
+            executeNonResultQuery(String.format("INSERT INTO USERS VALUES (%s, %s, %d, 0, 0);", formatStringValue(user.getId()), formatStringValue(user.getName()), RouletteBot.START_ACCOUNT_VALUE));
             return true;
         }
 
@@ -41,60 +42,60 @@ public class DataHandler {
 
     /**
      * Remove user from the database.
-     * @param username of the user.
+     * @param user to remove.
      * @return if the user has been removed or not.
      */
-    public static boolean removeUser(String username) {
-        executeNonResultQuery(String.format("DELETE FROM USERS WHERE NAME = %s", formatStringValue(username)));
+    public static boolean removeUser(User user) {
+        executeNonResultQuery(String.format("DELETE FROM USERS WHERE id = %s", formatStringValue(user.getId())));
         return true;
     }
 
     /**
-     * @param username of the user.
+     * @param user to modify.
      * @param value to modify by (negative to decrease value).
      */
-    public static void modifyAccountValue(String username, int value) {
-        executeNonResultQuery(String.format("UPDATE USERS SET AMOUNT = AMOUNT + %d WHERE NAME = %s;", value, formatStringValue(username)));
+    public static void modifyAccountValue(User user, int value) {
+        executeNonResultQuery(String.format("UPDATE USERS SET AMOUNT = AMOUNT + %d WHERE ID = %s;", value, formatStringValue(user.getId())));
     }
 
     /**
      * Increments the amount of wins of the user.
-     * @param username of the user.
+     * @param user to modify.
      */
-    public static void incrementWins(String username) {
-        executeNonResultQuery(String.format("UPDATE USERS SET WINS = WINS + 1 WHERE NAME = %s;", formatStringValue(username)));
+    public static void incrementWins(User user) {
+        executeNonResultQuery(String.format("UPDATE USERS SET WINS = WINS + 1 WHERE ID = %s;", formatStringValue(user.getId())));
     }
 
     /**
      * Increments the amount of bets of the user.
-     * @param username of the user.
+     * @param user to modify.
      */
-    public static void incrementBets(String username) {
-        executeNonResultQuery(String.format("UPDATE USERS SET BETS = BETS + 1 WHERE NAME = %s;", formatStringValue(username)));
+    public static void incrementBets(User user) {
+        executeNonResultQuery(String.format("UPDATE USERS SET BETS = BETS + 1 WHERE ID = %s;", formatStringValue(user.getId())));
     }
 
     /**
-     * @param username of the user.
+     * @param user to get value of.
      * @return total account value of user.
      */
-    public static int getUserAccountValue(String username) {
-        return getDataBaseUser(username).amount;
+    public static int getUserAccountValue(User user) {
+        return getDataBaseUser(user).amount;
     }
 
     /**
-     * @param username of the user.
+     * @param user to get value of.
      * @return the total amount of wins of user.
      */
-    public static int getUserWins(String username) {
-        return getDataBaseUser(username).wins;
+    public static int getUserWins(User user) {
+        return getDataBaseUser(user).wins;
     }
 
     /**
-     * @param username of the user.
+     * @param user to get value of.
      * @return the total amount of bets of the user.
      */
-    public static int getUserBets(String username) {
-        return getDataBaseUser(username).bets;
+    public static int getUserBets(User user) {
+        return getDataBaseUser(user).bets;
     }
 
     /**
@@ -107,7 +108,7 @@ public class DataHandler {
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                users.add(new DataBaseUser(rs.getInt("id"), rs.getString("name"), rs.getInt("amount"), rs.getInt("bets"), rs.getInt("wins")));
+                users.add(new DataBaseUser(rs.getString("id"), rs.getString("name"), rs.getInt("amount"), rs.getInt("bets"), rs.getInt("wins")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -117,21 +118,11 @@ public class DataHandler {
     }
 
     /**
-     * Reset the AUTO_INCREMENT of the database.
-     * @param value to reset to.
-     */
-    public static void resetDatabaseAutoIncrement(int value) {
-        if (getAllUsers().size() == 0) {
-            executeNonResultQuery(String.format("ALTER TABLE USERS AUTO_INCREMENT = %d", value));
-        }
-    }
-
-    /**
-     * @param username of the user.
+     * @param user to get.
      * @return DataBaseUser representation of the specified username.
      */
-    private static DataBaseUser getDataBaseUser(String username) {
-        return executeResultQuery(String.format(GET_USER_STATEMENT, formatStringValue(username)));
+    private static DataBaseUser getDataBaseUser(User user) {
+        return executeResultQuery(String.format(GET_USER_STATEMENT, formatStringValue(user.getId())));
     }
 
     /**
@@ -145,7 +136,7 @@ public class DataHandler {
              ResultSet rs = ps.executeQuery()) {
 
             if (rs.next()) {
-                return new DataBaseUser(rs.getInt("id"), rs.getString("name"), rs.getInt("amount"), rs.getInt("bets"), rs.getInt("wins"));
+                return new DataBaseUser(rs.getString("id"), rs.getString("name"), rs.getInt("amount"), rs.getInt("bets"), rs.getInt("wins"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -182,13 +173,13 @@ public class DataHandler {
      * Represents a user in the database, an in between the Discord JDA api User and the database.
      */
     private static class DataBaseUser {
-        final int id;
+        final String id;
         final String name;
         final int amount;
         final int bets;
         final int wins;
 
-        public DataBaseUser(int id, String name, int amount, int bets, int wins) {
+        public DataBaseUser(String id, String name, int amount, int bets, int wins) {
             this.id = id;
             this.name = name;
             this.amount = amount;
