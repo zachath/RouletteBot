@@ -30,6 +30,8 @@ public class RouletteBot extends ListenerAdapter {
 
     public static final int START_ACCOUNT_VALUE = 500;
 
+    //TODO: Generally in entire project: Use User instead of Member.
+
     public static void main (String[] args) throws Exception {
         if (args.length != 2) {
             System.out.println("The discord token and the id of the owner must be specified in the command line.");

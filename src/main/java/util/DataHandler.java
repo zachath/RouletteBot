@@ -23,7 +23,7 @@ public class DataHandler {
     public static final String DATABASE_USERNAME = "root";
     public static final String DATABASE_PASSWORD = "root";
 
-    public static final String GET_USER_STATEMENT = "SELECT * FROM USERS WHERE NAME = %s;";
+    public static final String GET_USER_STATEMENT = "SELECT * FROM USERS WHERE ID = %s;";
     public static final String TEST_ROW_NAME = "test";
 
     /**
