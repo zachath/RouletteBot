@@ -8,9 +8,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Handles the connection to the local MySQL database.
@@ -98,23 +96,8 @@ public class DataHandler {
         return getDataBaseUser(user).bets;
     }
 
-    /**
-     * @return a List of all the users in the database.
-     */
-    public static List<DataBaseUser> getAllUsers() {
-        List<DataBaseUser> users = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(DATABASE_CONNECTION_URL, DATABASE_USERNAME, DATABASE_PASSWORD);
-             PreparedStatement ps = conn.prepareStatement("SELECT * FROM USERS");
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                users.add(new DataBaseUser(rs.getString("id"), rs.getString("name"), rs.getInt("amount"), rs.getInt("bets"), rs.getInt("wins")));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return users;
+    public static String getNameOfUserInDatabase(User user) {
+        return getDataBaseUser(user).name;
     }
 
     /**
@@ -122,7 +105,67 @@ public class DataHandler {
      * @return DataBaseUser representation of the specified username.
      */
     private static DataBaseUser getDataBaseUser(User user) {
-        return executeResultQuery(String.format(GET_USER_STATEMENT, formatStringValue(user.getId())));
+        DataBaseUser dataBaseUser = executeResultQuery(String.format(GET_USER_STATEMENT, formatStringValue(user.getId())));
+
+        try {
+            //If names are not the same (it has changed since last time user was seen).
+            if (!user.getName().equals(dataBaseUser.name)) {
+                //Update name and try again.
+                updateRow(user.getId(), user.getName(), dataBaseUser.amount, dataBaseUser.bets, dataBaseUser.wins);
+                return getDataBaseUser(user);
+            }
+        } catch (NullPointerException e) {
+            return null;
+        }
+
+        return dataBaseUser;
+    }
+
+    /**
+     * Update with new values, assign value you wish to remain unchanged as null.
+     * @param id of row to update, must be assigned value. If given an id that does not exist in the database it will still success although the database will remain unchanged´.
+     * @param name new name.
+     * @param amount new amount.
+     * @param bets new bets.
+     * @param wins new wins.
+     */
+    private static void updateRow(String id, String name, Integer amount, Integer bets, Integer wins) {
+        if (id == null && name == null && amount == null && bets == null && wins == null) {
+            return;
+        }
+
+        StringBuilder query = new StringBuilder();
+        query.append("UPDATE USERS SET ");
+
+        if (name != null) {
+            query.append(String.format("NAME = %s,", formatStringValue(name)));
+        }
+
+        if (amount != null) {
+            query.append(String.format("AMOUNT = %d,", amount));
+        }
+
+        if (bets != null) {
+            query.append(String.format("BETS = %d,", bets));
+        }
+
+        if (wins != null) {
+            query.append(String.format("WINS = %d,", wins));
+        }
+
+        //Trim the last ','.
+        String tmp = query.toString();
+        String s = tmp.substring(0, tmp.length() - 1);
+
+        //Id cannot be null.
+        if (id != null) {
+            s = s + String.format(" WHERE ID = %s;", formatStringValue(id));
+        }
+        else {
+            return;
+        }
+
+        executeNonResultQuery(s);
     }
 
     /**

@@ -17,12 +17,16 @@ import util.DataHandler;
 import java.util.EnumSet;
 import java.util.List;
 
+/**
+ * Tests the DataHandler and its connection to the database,
+ * current coverage: Method 16/16; Line 58/60
+ */
 public class DataHandlerTest {
     private static final String TEST_ROW_NAME = DataHandler.TEST_ROW_NAME;
     private static final TestUser TEST_USER = new TestUser(TEST_ROW_NAME, "NAME:" + TEST_ROW_NAME);
 
     /**
-     * Since we need a row to operate on, ensure that the specified is always present.
+     * Since we need a row to operate on for testing, ensure that the specified is always present.
      */
     @BeforeEach
     public void ensureTestRowPresent() {
@@ -31,12 +35,16 @@ public class DataHandlerTest {
     }
 
     /**
-     * Remove the test user and reset the AUTO_INCREMENT of the database.
+     * Remove the test user.
      */
     @AfterAll
     public static void resetDatabase() {
         DataHandler.removeUser(TEST_USER);
     }
+
+    /*
+    * Rest of the tests should be self-explanatory with the by praxis explicit and long names.
+    */
 
     @Test
     public void incrementWinsTest() {
@@ -64,6 +72,19 @@ public class DataHandlerTest {
     public void dropUserTest() {
         DataHandler.removeUser(TEST_USER);
         assertTrue(DataHandler.addUser(TEST_USER));
+    }
+
+    @Test
+    public void addingAlreadyExistingUserFails() {
+        assertFalse(DataHandler.addUser(TEST_USER));
+    }
+
+    @Test
+    public void usernameIsUpdatedInDatabaseIfUpdatedInDiscord() {
+        String newName = "NEWNAME:" + TEST_ROW_NAME;
+        TestUser newUser = new TestUser(TEST_ROW_NAME, newName);
+        DataHandler.getUserAccountValue(newUser); //Any operation that queries the database will do.
+        assertEquals(newName, DataHandler.getNameOfUserInDatabase(newUser));
     }
 
     /**
