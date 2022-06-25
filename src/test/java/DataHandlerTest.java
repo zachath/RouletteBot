@@ -19,7 +19,7 @@ import java.util.List;
 
 public class DataHandlerTest {
     private static final String TEST_ROW_NAME = DataHandler.TEST_ROW_NAME;
-    private static final TestUser TEST_USER = new TestUser(TEST_ROW_NAME, TEST_ROW_NAME);
+    private static final TestUser TEST_USER = new TestUser(TEST_ROW_NAME, "NAME:" + TEST_ROW_NAME);
 
     /**
      * Since we need a row to operate on, ensure that the specified is always present.
