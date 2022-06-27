@@ -48,24 +48,27 @@ public class DataHandlerTest {
 
     @Test
     public void incrementWinsTest() {
-        int expected = DataHandler.getUserWins(TEST_USER) + 1;
+        DataHandler.DataBaseUser testUser = DataHandler.getDataBaseUser(TEST_USER);
+        int expected = testUser.wins + 1;
         DataHandler.incrementWins(TEST_USER);
-        assertEquals(expected, DataHandler.getUserWins(TEST_USER));
+        assertEquals(expected, DataHandler.getDataBaseUser(TEST_USER).wins);
     }
 
     @Test
     public void incrementBetsTest() {
-        int expected = DataHandler.getUserBets(TEST_USER) + 1;
+        DataHandler.DataBaseUser testUser = DataHandler.getDataBaseUser(TEST_USER);
+        int expected = testUser.bets + 1;
         DataHandler.incrementBets(TEST_USER);
-        assertEquals(expected, DataHandler.getUserBets(TEST_USER));
+        assertEquals(expected, DataHandler.getDataBaseUser(TEST_USER).bets);
     }
 
     @Test
     public void modifyAccountValueTest() {
+        DataHandler.DataBaseUser testUser = DataHandler.getDataBaseUser(TEST_USER);
         int value = 50;
-        int expected = DataHandler.getUserAccountValue(TEST_USER) + value;
+        int expected = testUser.amount + value;
         DataHandler.modifyAccountValue(TEST_USER, value);
-        assertEquals(expected, DataHandler.getUserAccountValue(TEST_USER));
+        assertEquals(expected, DataHandler.getDataBaseUser(TEST_USER).amount);
     }
 
     @Test
@@ -83,8 +86,8 @@ public class DataHandlerTest {
     public void usernameIsUpdatedInDatabaseIfUpdatedInDiscord() {
         String newName = "NEWNAME:" + TEST_ROW_NAME;
         TestUser newUser = new TestUser(TEST_ROW_NAME, newName);
-        DataHandler.getUserAccountValue(newUser); //Any operation that queries the database will do.
-        assertEquals(newName, DataHandler.getNameOfUserInDatabase(newUser));
+        DataHandler.getDataBaseUser(newUser); //Any operation that queries the database will do.
+        assertEquals(newName, DataHandler.getDataBaseUser(newUser).name);
     }
 
     /**

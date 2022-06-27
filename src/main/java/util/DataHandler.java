@@ -73,38 +73,10 @@ public class DataHandler {
     }
 
     /**
-     * @param user to get value of.
-     * @return total account value of user.
-     */
-    public static int getUserAccountValue(User user) {
-        return getDataBaseUser(user).amount;
-    }
-
-    /**
-     * @param user to get value of.
-     * @return the total amount of wins of user.
-     */
-    public static int getUserWins(User user) {
-        return getDataBaseUser(user).wins;
-    }
-
-    /**
-     * @param user to get value of.
-     * @return the total amount of bets of the user.
-     */
-    public static int getUserBets(User user) {
-        return getDataBaseUser(user).bets;
-    }
-
-    public static String getNameOfUserInDatabase(User user) {
-        return getDataBaseUser(user).name;
-    }
-
-    /**
      * @param user to get.
      * @return DataBaseUser representation of the specified username.
      */
-    private static DataBaseUser getDataBaseUser(User user) {
+    public static DataBaseUser getDataBaseUser(User user) {
         DataBaseUser dataBaseUser = executeResultQuery(String.format(GET_USER_STATEMENT, formatStringValue(user.getId())));
 
         try {
@@ -215,12 +187,12 @@ public class DataHandler {
     /**
      * Represents a user in the database, an in between the Discord JDA api User and the database.
      */
-    private static class DataBaseUser {
-        final String id;
-        final String name;
-        final int amount;
-        final int bets;
-        final int wins;
+    public static final class DataBaseUser {
+        public final String id;
+        public final String name;
+        public final int amount;
+        public final int bets;
+        public final int wins;
 
         public DataBaseUser(String id, String name, int amount, int bets, int wins) {
             this.id = id;
