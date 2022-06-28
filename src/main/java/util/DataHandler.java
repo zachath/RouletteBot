@@ -24,14 +24,16 @@ public class DataHandler {
     public static final String GET_USER_STATEMENT = "SELECT * FROM USERS WHERE ID = %s;";
     public static final String TEST_ROW_NAME = "test";
 
+    private static String NOT_FOUND_STRING = "NOT_FOUND";
+
     /**
      * Add user to the database.
      * @param user user to add.
      * @return if the user has been added or not.
      */
     public static boolean addUser(User user) {
-        if (getDataBaseUser(user) == null) {
-            executeNonResultQuery(String.format("INSERT INTO USERS VALUES (%s, %s, %d, 0, 0);", formatStringValue(user.getId()), formatStringValue(user.getName()), RouletteBot.START_ACCOUNT_VALUE));
+        if (!userExistsInDataBase(user)) {
+            executeQueryWithoutResult(String.format("INSERT INTO USERS VALUES (%s, %d, 0, 0);", formatStringValue(user.getId()), RouletteBot.START_ACCOUNT_VALUE));
             return true;
         }
 
@@ -41,11 +43,9 @@ public class DataHandler {
     /**
      * Remove user from the database.
      * @param user to remove.
-     * @return if the user has been removed or not.
      */
-    public static boolean removeUser(User user) {
-        executeNonResultQuery(String.format("DELETE FROM USERS WHERE id = %s", formatStringValue(user.getId())));
-        return true;
+    public static void removeUser(User user) {
+        executeQueryWithoutResult(String.format("DELETE FROM USERS WHERE id = %s", formatStringValue(user.getId())));
     }
 
     /**
@@ -53,7 +53,7 @@ public class DataHandler {
      * @param value to modify by (negative to decrease value).
      */
     public static void modifyAccountValue(User user, int value) {
-        executeNonResultQuery(String.format("UPDATE USERS SET AMOUNT = AMOUNT + %d WHERE ID = %s;", value, formatStringValue(user.getId())));
+        executeQueryWithoutResult(String.format("UPDATE USERS SET AMOUNT = AMOUNT + %d WHERE ID = %s;", value, formatStringValue(user.getId())));
     }
 
     /**
@@ -61,7 +61,7 @@ public class DataHandler {
      * @param user to modify.
      */
     public static void incrementWins(User user) {
-        executeNonResultQuery(String.format("UPDATE USERS SET WINS = WINS + 1 WHERE ID = %s;", formatStringValue(user.getId())));
+        executeQueryWithoutResult(String.format("UPDATE USERS SET WINS = WINS + 1 WHERE ID = %s;", formatStringValue(user.getId())));
     }
 
     /**
@@ -69,102 +69,90 @@ public class DataHandler {
      * @param user to modify.
      */
     public static void incrementBets(User user) {
-        executeNonResultQuery(String.format("UPDATE USERS SET BETS = BETS + 1 WHERE ID = %s;", formatStringValue(user.getId())));
+        executeQueryWithoutResult(String.format("UPDATE USERS SET BETS = BETS + 1 WHERE ID = %s;", formatStringValue(user.getId())));
     }
 
     /**
-     * @param user to get.
-     * @return DataBaseUser representation of the specified username.
+     * @param user user to get wins of.
+     * @return wins of user.
      */
-    public static DataBaseUser getDataBaseUser(User user) {
-        DataBaseUser dataBaseUser = executeResultQuery(String.format(GET_USER_STATEMENT, formatStringValue(user.getId())));
+    public static int getUserWins(User user) {
+        return getIntegerValue(user.getId(), "wins");
+    }
 
+    /**
+     * @param user user to get bets of.
+     * @return bets of user.
+     */
+    public static int getUserBets(User user) {
+        return getIntegerValue(user.getId(), "bets");
+    }
+
+    /**
+     * @param user user to get amount of.
+     * @return amount of user.
+     */
+    public static int getUserAmount(User user) {
+        return getIntegerValue(user.getId(), "amount");
+    }
+
+    /**
+     * Gets the Integer value by parsing, at failure 0 is returned.
+     * @param userId id of user.
+     * @param column column to get.
+     * @return value of column or 0 if not int.
+     */
+    private static int getIntegerValue(String userId, String column) {
         try {
-            //If names are not the same (it has changed since last time user was seen).
-            if (!user.getName().equals(dataBaseUser.name)) {
-                //Update name and try again.
-                updateRow(user.getId(), user.getName(), dataBaseUser.amount, dataBaseUser.bets, dataBaseUser.wins);
-                return getDataBaseUser(user);
-            }
-        } catch (NullPointerException e) {
-            return null;
+            return Integer.parseInt(executeQueryWithResult(userId, column));
+        } catch (Exception e) {
+            return 0;
         }
-
-        return dataBaseUser;
     }
 
     /**
-     * Update with new values, assign value you wish to remain unchanged as null.
-     * @param id of row to update, must be assigned value. If given an id that does not exist in the database it will still success although the database will remain unchanged´.
-     * @param name new name.
-     * @param amount new amount.
-     * @param bets new bets.
-     * @param wins new wins.
+     * @param user user in the database to get the id of.
+     * @return the id of the user if they exist, otherwise NOT_FOUND.
      */
-    private static void updateRow(String id, String name, Integer amount, Integer bets, Integer wins) {
-        if (id == null && name == null && amount == null && bets == null && wins == null) {
-            return;
-        }
-
-        StringBuilder query = new StringBuilder();
-        query.append("UPDATE USERS SET ");
-
-        if (name != null) {
-            query.append(String.format("NAME = %s,", formatStringValue(name)));
-        }
-
-        if (amount != null) {
-            query.append(String.format("AMOUNT = %d,", amount));
-        }
-
-        if (bets != null) {
-            query.append(String.format("BETS = %d,", bets));
-        }
-
-        if (wins != null) {
-            query.append(String.format("WINS = %d,", wins));
-        }
-
-        //Trim the last ','.
-        String tmp = query.toString();
-        String s = tmp.substring(0, tmp.length() - 1);
-
-        //Id cannot be null.
-        if (id != null) {
-            s = s + String.format(" WHERE ID = %s;", formatStringValue(id));
-        }
-        else {
-            return;
-        }
-
-        executeNonResultQuery(s);
+    private static String getDatabaseId(User user) {
+        return executeQueryWithResult(user.getId(), "id");
     }
 
     /**
-     * Executes a query and returns the result in the form of a DataBaseUser.
-     * @param sqlQuery Query to execute.
-     * @return Resulting DataBaseUser.
+     * @param user user to check whether they exist.
+     * @return if the user exists in the database or not.
      */
-    private static DataBaseUser executeResultQuery(String sqlQuery) {
+    private static boolean userExistsInDataBase(User user) {
+        return !getDatabaseId(user).equals(NOT_FOUND_STRING);
+    }
+
+    /**
+     * Executes the query and returns the result from the database.
+     * @param userId id of user.
+     * @param column column to get from database.
+     * @return value if present, otherwise NOT_FOUND.
+     */
+    private static String executeQueryWithResult(String userId, String column) {
+        String query = String.format("SELECT %s FROM USERS WHERE ID = %s;", column, formatStringValue(userId));
         try (Connection conn = DriverManager.getConnection(DATABASE_CONNECTION_URL, DATABASE_USERNAME, DATABASE_PASSWORD);
-             PreparedStatement ps = conn.prepareStatement(sqlQuery);
+             PreparedStatement ps = conn.prepareStatement(query);
              ResultSet rs = ps.executeQuery()) {
 
             if (rs.next()) {
-                return new DataBaseUser(rs.getString("id"), rs.getString("name"), rs.getInt("amount"), rs.getInt("bets"), rs.getInt("wins"));
+                return rs.getString(column);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return null;
+        return NOT_FOUND_STRING;
     }
 
     /**
      * Executes the query without any result.
      * @param sqlQuery Query to execute.
      */
-    private static void executeNonResultQuery(String sqlQuery) {
+    private static void executeQueryWithoutResult(String sqlQuery) {
         try (Connection conn = DriverManager.getConnection(DATABASE_CONNECTION_URL, DATABASE_USERNAME, DATABASE_PASSWORD);
              PreparedStatement ps = conn.prepareStatement(sqlQuery)) {
 
@@ -182,24 +170,5 @@ public class DataHandler {
      */
     private static String formatStringValue(String s) {
         return "\"" + s + "\"";
-    }
-
-    /**
-     * Represents a user in the database, an in between the Discord JDA api User and the database.
-     */
-    public static final class DataBaseUser {
-        public final String id;
-        public final String name;
-        public final int amount;
-        public final int bets;
-        public final int wins;
-
-        public DataBaseUser(String id, String name, int amount, int bets, int wins) {
-            this.id = id;
-            this.name = name;
-            this.amount = amount;
-            this.bets = bets;
-            this.wins = wins;
-        }
     }
 }

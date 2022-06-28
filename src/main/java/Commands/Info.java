@@ -19,10 +19,9 @@ public class Info implements Command {
 
         try {
             builder.append(String.format("%s, your stats:\n", user.getAsMention()));
-            DataHandler.DataBaseUser dataBaseUser = DataHandler.getDataBaseUser(user);
-            builder.append(String.format("Account value: %d\n", dataBaseUser.amount));
-            builder.append(String.format("Bets: %d\n", dataBaseUser.bets));
-            builder.append(String.format("Wins: %d\n", dataBaseUser.wins));
+            builder.append(String.format("Account value: %d\n", DataHandler.getUserAmount(user)));
+            builder.append(String.format("Bets: %d\n", DataHandler.getUserBets(user)));
+            builder.append(String.format("Wins: %d\n", DataHandler.getUserWins(user)));
         } catch (NullPointerException e) {
             builder.append("You have never played a game and therefore are not present in the database");
         }

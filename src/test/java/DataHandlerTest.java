@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class DataHandlerTest {
     private static final String TEST_ROW_NAME = DataHandler.TEST_ROW_NAME;
-    private static final TestUser TEST_USER = new TestUser(TEST_ROW_NAME, "NAME:" + TEST_ROW_NAME);
+    private static final TestUser TEST_USER = new TestUser("ID:" + TEST_ROW_NAME, "NAME:" + TEST_ROW_NAME);
 
     /**
      * Since we need a row to operate on for testing, ensure that the specified is always present.
@@ -48,27 +48,24 @@ public class DataHandlerTest {
 
     @Test
     public void incrementWinsTest() {
-        DataHandler.DataBaseUser testUser = DataHandler.getDataBaseUser(TEST_USER);
-        int expected = testUser.wins + 1;
+        int expected = DataHandler.getUserWins(TEST_USER) + 1;
         DataHandler.incrementWins(TEST_USER);
-        assertEquals(expected, DataHandler.getDataBaseUser(TEST_USER).wins);
+        assertEquals(expected, DataHandler.getUserWins(TEST_USER));
     }
 
     @Test
     public void incrementBetsTest() {
-        DataHandler.DataBaseUser testUser = DataHandler.getDataBaseUser(TEST_USER);
-        int expected = testUser.bets + 1;
+        int expected = DataHandler.getUserBets(TEST_USER) + 1;
         DataHandler.incrementBets(TEST_USER);
-        assertEquals(expected, DataHandler.getDataBaseUser(TEST_USER).bets);
+        assertEquals(expected, DataHandler.getUserBets(TEST_USER));
     }
 
     @Test
     public void modifyAccountValueTest() {
-        DataHandler.DataBaseUser testUser = DataHandler.getDataBaseUser(TEST_USER);
         int value = 50;
-        int expected = testUser.amount + value;
+        int expected = DataHandler.getUserAmount(TEST_USER) + value;
         DataHandler.modifyAccountValue(TEST_USER, value);
-        assertEquals(expected, DataHandler.getDataBaseUser(TEST_USER).amount);
+        assertEquals(expected, DataHandler.getUserAmount(TEST_USER));
     }
 
     @Test
@@ -80,14 +77,6 @@ public class DataHandlerTest {
     @Test
     public void addingAlreadyExistingUserFails() {
         assertFalse(DataHandler.addUser(TEST_USER));
-    }
-
-    @Test
-    public void usernameIsUpdatedInDatabaseIfUpdatedInDiscord() {
-        String newName = "NEWNAME:" + TEST_ROW_NAME;
-        TestUser newUser = new TestUser(TEST_ROW_NAME, newName);
-        DataHandler.getDataBaseUser(newUser); //Any operation that queries the database will do.
-        assertEquals(newName, DataHandler.getDataBaseUser(newUser).name);
     }
 
     /**
