@@ -14,23 +14,21 @@ public class RouletteBot extends ListenerAdapter {
     public static final String PREFIX = "?";
 
     //Used for eventual admin commands, to recognize the owner of the bot. Given as first runtime parameter.
-    private static String OWNER_ID;
+    public static String OWNER_ID;
 
     //Discord token required to run the bot. Given as second runtime parameter.
     private static String TOKEN;
 
     //All available commands.
-    private static final Create CREATE_COMMAND = new Create();
-    private static final Begin BEGIN_COMMAND = new Begin();
-    private static final End END_COMMAND = new End();
-    private static final Info INFO_COMMAND = new Info();
-    private static final Join JOIN_COMMAND = new Join();
-    private static final Leave LEAVE_COMMAND = new Leave();
-    private static final Pull PULL_COMMAND = new Pull();
+    public static final Create CREATE_COMMAND = new Create();
+    public static final Begin BEGIN_COMMAND = new Begin();
+    public static final End END_COMMAND = new End();
+    public static final Info INFO_COMMAND = new Info();
+    public static final Join JOIN_COMMAND = new Join();
+    public static final Leave LEAVE_COMMAND = new Leave();
+    public static final Pull PULL_COMMAND = new Pull();
 
     public static final int START_ACCOUNT_VALUE = 500;
-
-    //TODO: Generally in entire project: Use User instead of Member.
 
     public static void main (String[] args) throws Exception {
         if (args.length != 2) {

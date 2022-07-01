@@ -2,9 +2,7 @@
 
 package game;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,31 +14,23 @@ import java.util.Random;
 public class Game {
     private final static int PLAYER_LIMIT = 3;
     private final static int CYLINDER_SIZE = 6;
-    private final List<Member> players = new ArrayList<>();
+    private final List<User> players = new ArrayList<>();
 
-    private final TextChannel textChannel;
-    private final Guild guild;
-    private Member leader;
+    private User leader;
     private TypeOfGame type = TypeOfGame.UNDECLARED;
-
-    //Used for timing out players?
-    private final long cTime;
 
     private boolean status;
     private int current;
     private int clicksUntilFire;
 
-    public Game(Member leader, Guild guild, TextChannel textChannel) {
+    public Game(User leader) {
         this.leader = leader;
         players.add(leader);
-        this.textChannel = textChannel;
-        this.guild = guild;
         current = 0;
-        cTime = System.currentTimeMillis();
         clicksUntilFire = new Random().nextInt(CYLINDER_SIZE + 1);
     }
 
-    public boolean addPlayer(Member player) {
+    public boolean addPlayer(User player) {
         if (players.size() == PLAYER_LIMIT) {
             return false;
         }
@@ -50,7 +40,7 @@ public class Game {
         }
     }
 
-    public void dropPlayer(Member player) {
+    public void dropPlayer(User player) {
         players.remove(player);
 
         if (type == TypeOfGame.SINGLE) {
@@ -71,20 +61,20 @@ public class Game {
         return --clicksUntilFire == 0;
     }
 
-    public List<Member> getPlayers() {
+    public List<User> getPlayers() {
         return players;
     }
 
-    public boolean contains(Member member) {
-        for (Member player : players) {
-            if (player.equals(member)) {
+    public boolean contains(User user) {
+        for (User player : players) {
+            if (player.equals(user)) {
                 return true;
             }
         }
         return false;
     }
 
-    public Member getLeader() {
+    public User getLeader() {
         return leader;
     }
 
@@ -92,7 +82,7 @@ public class Game {
         return type;
     }
 
-    public Member getCurrentPlayer() {
+    public User getCurrentPlayer() {
         if (current >= players.size()) {
             current = 0;
         }
@@ -109,8 +99,8 @@ public class Game {
         return status;
     }
 
-    public boolean isFinished() {
-        return clicksUntilFire == 0;
+    public boolean onlyOneChamberLeft() {
+        return clicksUntilFire == 1;
     }
 
     public void goLive() {

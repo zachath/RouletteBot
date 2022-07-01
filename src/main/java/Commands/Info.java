@@ -13,17 +13,18 @@ import util.DataHandler;
 public class Info implements Command {
     @Override
     public void run(MessageReceivedEvent event) {
-        User user = event.getAuthor();
+        User messageAuthor = event.getAuthor();
 
         StringBuilder builder = new StringBuilder();
 
-        try {
-            builder.append(String.format("%s, your stats:\n", user.getAsMention()));
-            builder.append(String.format("Account value: %d\n", DataHandler.getUserAmount(user)));
-            builder.append(String.format("Bets: %d\n", DataHandler.getUserBets(user)));
-            builder.append(String.format("Wins: %d\n", DataHandler.getUserWins(user)));
-        } catch (NullPointerException e) {
-            builder.append("You have never played a game and therefore are not present in the database");
+        if (DataHandler.userExistsInDataBase(messageAuthor)) {
+            builder.append(String.format("%s, your stats:\n", messageAuthor.getAsMention()));
+            builder.append(String.format("Account value: %d\n", DataHandler.getUserAmount(messageAuthor)));
+            builder.append(String.format("Bets: %d\n", DataHandler.getUserBets(messageAuthor)));
+            builder.append(String.format("Wins: %d\n", DataHandler.getUserWins(messageAuthor)));
+        }
+        else {
+            builder.append("You are not present in the database.");
         }
 
         event.getTextChannel().sendMessage(builder.toString()).queue();

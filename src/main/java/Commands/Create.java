@@ -4,9 +4,8 @@ package Commands;
 
 import bot.RouletteBot;
 import game.Game;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import util.DataHandler;
 
@@ -16,18 +15,18 @@ import util.DataHandler;
 public class Create implements Command {
     @Override
     public void run(MessageReceivedEvent event) {
-        Guild guild = event.getGuild();
-        Member leader = event.getMember();
+        User leader = event.getAuthor();
         TextChannel textChannel = event.getTextChannel();
 
         if (DataHandler.onGoingGames.containsKey(textChannel)) {
             textChannel.sendMessage("A game is already ongoing in this text channel.").queue();
         }
         else {
-            Game game = new Game(leader, guild, textChannel);
+            DataHandler.addUser(leader);
+            Game game = new Game(leader);
             DataHandler.onGoingGames.put(textChannel, game);
 
-            textChannel.sendMessage(String.format("A game has been created, type %s to join", getCommandShortHand())).queue();
+            textChannel.sendMessage(String.format("A game has been created, type %s to join", RouletteBot.JOIN_COMMAND.getCommandShortHand())).queue();
         }
     }
 

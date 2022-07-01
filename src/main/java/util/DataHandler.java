@@ -97,6 +97,14 @@ public class DataHandler {
     }
 
     /**
+     * @param user user to check whether they exist.
+     * @return if the user exists in the database or not.
+     */
+    public static boolean userExistsInDataBase(User user) {
+        return !getDatabaseId(user).equals(NOT_FOUND_STRING);
+    }
+
+    /**
      * Gets the Integer value by parsing, at failure 0 is returned.
      * @param userId id of user.
      * @param column column to get.
@@ -116,14 +124,6 @@ public class DataHandler {
      */
     private static String getDatabaseId(User user) {
         return executeQueryWithResult(user.getId(), "id");
-    }
-
-    /**
-     * @param user user to check whether they exist.
-     * @return if the user exists in the database or not.
-     */
-    private static boolean userExistsInDataBase(User user) {
-        return !getDatabaseId(user).equals(NOT_FOUND_STRING);
     }
 
     /**
