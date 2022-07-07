@@ -2,3 +2,5 @@
 *.iml
 target/
 sql/
+out/
+src/main/resources
