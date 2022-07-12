@@ -33,7 +33,7 @@ public class Begin implements Command {
                     game.goLive();
                     textChannel.sendMessage(String.format("Game has begun\nCurrent player is %s.", game.getCurrentPlayer().getAsMention())).queue();
 
-                    if (game.getPlayers().size() == 1) {
+                    if (game.getActivePlayers().size() == 1) {
                         textChannel.sendMessage("Single-player russian roulette, the saddest game known to man.").queue();
                     }
                 }

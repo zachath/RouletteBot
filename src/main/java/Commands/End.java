@@ -28,8 +28,8 @@ public class End implements Command {
             textChannel.sendMessage(String.format("You may not end this game, current leader is: %s.", game.getLeader().getAsMention())).queue();
         }
         else {
-            DataHandler.onGoingGames.remove(textChannel);
             textChannel.sendMessage(String.format("The game has been cancelled by %s.", messageAuthor.getAsMention())).queue();
+            DataHandler.endGame(textChannel);
         }
     }
 

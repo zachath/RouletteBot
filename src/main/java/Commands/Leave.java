@@ -33,9 +33,10 @@ public class Leave implements Command {
 
             game.dropPlayer(messageAuthor);
 
-            if (game.getPlayers().size() == 0) {
+            if (game.getActivePlayers().size() == 0) {
                 textChannel.sendMessage("All players have left the game, game cancelled.").queue();
-                DataHandler.onGoingGames.remove(textChannel);
+
+                DataHandler.endGame(textChannel);
             }
             else if (messageAuthor.equals(game.getLeader())) {
                 textChannel.sendMessage(String.format("Leader has left, new leader: %s", game.newLeader())).queue();

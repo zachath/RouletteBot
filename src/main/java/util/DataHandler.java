@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 
 import java.sql.*;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
 /**
@@ -21,10 +22,48 @@ public class DataHandler {
     public static final String DATABASE_USERNAME = "root";
     public static final String DATABASE_PASSWORD = "root";
 
-    public static final String GET_USER_STATEMENT = "SELECT * FROM USERS WHERE ID = %s;";
     public static final String TEST_ROW_NAME = "test";
 
     private static String NOT_FOUND_STRING = "NOT_FOUND";
+
+    /**
+     * Ends the game by removing it from the active pool, sets winner and saves it to the database.
+     * @param textChannel of game to end.
+     */
+    public static void endGame(TextChannel textChannel) {
+        Game game = onGoingGames.remove(textChannel);
+        try {
+            game.setWinner(game.getActivePlayers().get(0));
+        }
+        catch (Exception ignored) {}
+        saveGameToDatabase(game);
+    }
+
+    /**
+     * Saves finished game to database.
+     * @param game game to save.
+     */
+    public static void saveGameToDatabase(Game game) {
+        executeQueryWithoutResult(String.format(
+                "INSERT INTO GAMES VALUES (%s, %s, %d, %d, %d, %d, %s, %s);",
+                formatStringValue(game.getId()),
+                formatStringValue(game.getDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)),
+                game.getPulls(),
+                game.getBets(),
+                game.getTotalBetsValue(),
+                game.getAllPlayers().size(),
+                formatStringValue(game.getType().toString()),
+                formatStringValue(game.getWinner() != null ? game.getWinner().getId() : "NONE")
+        ));
+
+        for (User user : game.getAllPlayers()) {
+            executeQueryWithoutResult(String.format(
+                    "INSERT INTO GAME_PLAYER_BRIDGE_TABLE VALUES (%s, %s);",
+                    formatStringValue(game.getId()),
+                    formatStringValue(user.getId())
+            ));
+        }
+    }
 
     /**
      * Add user to the database.

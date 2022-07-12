@@ -23,7 +23,7 @@ public class Create implements Command {
         }
         else {
             DataHandler.addUser(leader);
-            Game game = new Game(leader);
+            Game game = new Game(leader, textChannel);
             DataHandler.onGoingGames.put(textChannel, game);
 
             textChannel.sendMessage(String.format("A game has been created, type %s to join", RouletteBot.JOIN_COMMAND.getCommandShortHand())).queue();

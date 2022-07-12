@@ -24,7 +24,7 @@ public class Join implements Command {
         if (game == null) {
             textChannel.sendMessage("No game here.").queue();
         }
-        else if (game.getPlayers().contains(messageAuthor)) {
+        else if (game.getActivePlayers().contains(messageAuthor)) {
             textChannel.sendMessage(String.format("You have already joined %s", messageAuthor.getAsMention())).queue();
         }
         else if (!(game.addPlayer(messageAuthor))) {

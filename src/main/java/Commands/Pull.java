@@ -47,6 +47,7 @@ public class Pull implements Command {
                 DataHandler.incrementBets(currentPlayer);
 
                 boolean dead = game.pullTrigger();
+                game.addBet(bet);
 
                 if (dead) {
                     game.dropPlayer(currentPlayer);
@@ -62,11 +63,12 @@ public class Pull implements Command {
                             currentPlayer = game.getCurrentPlayer();
                             textChannel.sendMessage(String.format("Game over %s is the winner, your account value has been doubled.", currentPlayer.getAsMention())).queue();
                             DataHandler.modifyAccountValue(currentPlayer, DataHandler.getUserAmount(currentPlayer) * 2);
+                            DataHandler.incrementWins(currentPlayer);
                         }
                         else if (game.getType() == TypeOfGame.SINGLE) {
                             textChannel.sendMessage(String.format("What a sad end, %s is dead, game over.", currentPlayer.getName())).queue();
                         }
-                        DataHandler.onGoingGames.remove(textChannel);
+                        DataHandler.endGame(textChannel);
                     }
                 }
                 else {
@@ -76,7 +78,7 @@ public class Pull implements Command {
                     if (game.onlyOneChamberLeft()) {
                         DataHandler.modifyAccountValue(currentPlayer, DataHandler.getUserAmount(currentPlayer) * 2);
                         textChannel.sendMessage("You win! Your account value has been doubled.").queue();
-                        DataHandler.onGoingGames.remove(textChannel);
+                        DataHandler.endGame(textChannel);
                         DataHandler.incrementWins(currentPlayer);
                     }
                 }
