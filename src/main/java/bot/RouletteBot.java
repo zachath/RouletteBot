@@ -12,8 +12,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 /*
  * TODO:
- *       * Testa fler än 1 spelare (Ludvig).
- *       * Implementera att det hålls koll på vilka användare som varit med på vilken match (inkluderar bridge table i databasen).
+ *       * Testa fler än 1 spelare.
  *       * Hur fungerar logging och varför det är nödvändigt.
  *       * Get the games I have played in (JOIN on the bridge table).
  * */
