@@ -14,7 +14,8 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
  * TODO:
  *       * Testa fler än 1 spelare.
  *       * Hur fungerar logging och varför det är nödvändigt.
- *       * Get the games I have played in (JOIN on the bridge table).
+ *       * Command: Get the games I have played in (JOIN on the bridge table).
+ *       * Command: help
  * */
 
 public class RouletteBot extends ListenerAdapter {
@@ -34,7 +35,9 @@ public class RouletteBot extends ListenerAdapter {
     public static final Join JOIN_COMMAND = new Join();
     public static final Leave LEAVE_COMMAND = new Leave();
     public static final Pull PULL_COMMAND = new Pull();
+    public static final GetGames GET_GAMES_COMMAND = new GetGames();
 
+    //TODO: Should be in the database instead?
     public static final int START_ACCOUNT_VALUE = 500;
 
     public static void main (String[] args) throws Exception {
@@ -89,6 +92,9 @@ public class RouletteBot extends ListenerAdapter {
         }
         else if (content.startsWith(PULL_COMMAND.getCommandShortHand())) {
             PULL_COMMAND.run(event);
+        }
+        else if (content.startsWith(GET_GAMES_COMMAND.getCommandShortHand())) {
+            GET_GAMES_COMMAND.run(event);
         }
     }
 }

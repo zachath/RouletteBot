@@ -9,7 +9,9 @@ import net.dv8tion.jda.api.entities.User;
 
 import java.sql.*;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Handles the connection to the local MySQL database.
@@ -24,7 +26,14 @@ public class DataHandler {
 
     public static final String TEST_ROW_NAME = "test";
 
-    private static String NOT_FOUND_STRING = "NOT_FOUND";
+    private static final String NOT_FOUND_STRING = "NOT_FOUND";
+
+    public static List<List<String>> getGamesOfUser(User user) {
+        return executeQueryRows(
+                String.format("select datetime, pulls, bets, total_bets_value, players, winner from roulettebot_db.games inner join roulettebot_db.game_player_bridge_table ON roulettebot_db.games.id = roulettebot_db.game_player_bridge_table.gameID and roulettebot_db.game_player_bridge_table.playerID = %s;", formatStringValue(user.getId())),
+                List.of("datetime", "pulls", "bets", "total_bets_value", "players", "winner")
+        );
+    }
 
     /**
      * Ends the game by removing it from the active pool, sets winner and saves it to the database.
@@ -151,7 +160,7 @@ public class DataHandler {
      */
     private static int getIntegerValue(String userId, String column) {
         try {
-            return Integer.parseInt(executeQueryWithResult(userId, column));
+            return Integer.parseInt(getUserColumnValue(userId, column));
         } catch (Exception e) {
             return 0;
         }
@@ -162,7 +171,7 @@ public class DataHandler {
      * @return the id of the user if they exist, otherwise NOT_FOUND.
      */
     private static String getDatabaseId(User user) {
-        return executeQueryWithResult(user.getId(), "id");
+        return getUserColumnValue(user.getId(), "id");
     }
 
     /**
@@ -171,7 +180,7 @@ public class DataHandler {
      * @param column column to get from database.
      * @return value if present, otherwise NOT_FOUND.
      */
-    private static String executeQueryWithResult(String userId, String column) {
+    private static String getUserColumnValue(String userId, String column) {
         String query = String.format("SELECT %s FROM USERS WHERE ID = %s;", column, formatStringValue(userId));
         try (Connection conn = DriverManager.getConnection(DATABASE_CONNECTION_URL, DATABASE_USERNAME, DATABASE_PASSWORD);
              PreparedStatement ps = conn.prepareStatement(query);
@@ -185,6 +194,31 @@ public class DataHandler {
         }
 
         return NOT_FOUND_STRING;
+    }
+
+    private static List<List<String>> executeQueryRows(String sqlQuery, List<String> rowColumns) {
+        List<List<String>> listOfRows = new ArrayList<>();
+        try (Connection connection = DriverManager.getConnection(DATABASE_CONNECTION_URL, DATABASE_USERNAME, DATABASE_PASSWORD);
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
+        ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            while (resultSet.next()) {
+                System.out.println("got here");
+                List<String> row = new ArrayList<>();
+                listOfRows.add(row);
+                for (String column : rowColumns) {
+                    row.add(resultSet.getString(column));
+                    System.out.println("Added " + resultSet.getString(column));
+                }
+            }
+
+            return listOfRows;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     /**
