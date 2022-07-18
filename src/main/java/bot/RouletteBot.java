@@ -12,14 +12,15 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 /*
  * TODO:
+ *       * Lagra vilket namn som hör till vilket id då api:n inte riktigt kan hantera det. Måste uppdateras när namnet ändras.
  *       * Testa fler än 1 spelare.
  *       * Hur fungerar logging och varför det är nödvändigt.
- *       * Command: Get the games I have played in (JOIN on the bridge table).
  *       * Command: help
  * */
 
 public class RouletteBot extends ListenerAdapter {
     public static final String PREFIX = "?";
+    public static final String DISCORD_MULTIPLE_CODE_MARKDOWN = "```";
 
     //Used for eventual admin commands, to recognize the owner of the bot. Given as first runtime parameter.
     public static String OWNER_ID;
@@ -35,9 +36,9 @@ public class RouletteBot extends ListenerAdapter {
     public static final Join JOIN_COMMAND = new Join();
     public static final Leave LEAVE_COMMAND = new Leave();
     public static final Pull PULL_COMMAND = new Pull();
-    public static final GetGames GET_GAMES_COMMAND = new GetGames();
+    public static final GetGames GET_GAMES_COMMAND = new GetGames(5);
 
-    //TODO: Should be in the database instead?
+    //TODO: Should be in the database instead? (Can then be changed when bot is running).
     public static final int START_ACCOUNT_VALUE = 500;
 
     public static void main (String[] args) throws Exception {

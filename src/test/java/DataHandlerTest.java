@@ -19,7 +19,7 @@ import java.util.List;
 
 /**
  * Tests the DataHandler and its connection to the database,
- * current coverage: Method 15/15; Line 31/35
+ * current coverage: Method 15/19; Line 30/72
  */
 public class DataHandlerTest {
     private static final String TEST_ROW_NAME = DataHandler.TEST_ROW_NAME;
