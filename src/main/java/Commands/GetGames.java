@@ -47,7 +47,7 @@ public class GetGames implements Command {
                 for (String column : row.keySet()) {
 
                     if (column.equals("winner") && !row.get(column).equals("NONE")) {
-                        stringBuilder.append(String.format("%s: %s\n", column, User.fromId(row.get(column))));
+                        stringBuilder.append(String.format("%s: %s\n", column, DataHandler.getUserName(User.fromId(row.get(column)))));
                     }
                     else {
                         stringBuilder.append(String.format("%s: %s\n", column, row.get(column)));

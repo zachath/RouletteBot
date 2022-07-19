@@ -82,10 +82,11 @@ public class DataHandler {
      */
     public static boolean addUser(User user) {
         if (!userExistsInDataBase(user)) {
-            executeQueryWithoutResult(String.format("INSERT INTO USERS VALUES (%s, %d, 0, 0);", formatStringValue(user.getId()), RouletteBot.START_ACCOUNT_VALUE));
+            executeQueryWithoutResult(String.format("INSERT INTO USERS VALUES (%s, %d, 0, 0, %s);", formatStringValue(user.getId()), RouletteBot.START_ACCOUNT_VALUE, formatStringValue(user.getName())));
             return true;
         }
 
+        updateUserName(user);
         return false;
     }
 
@@ -146,11 +147,28 @@ public class DataHandler {
     }
 
     /**
+     * @param user user to get name of in databae.
+     * @return name of user in database.
+     */
+    public static String getUserName(User user) {
+        return getUserColumnValue(user.getId(), "name");
+    }
+
+    /**
      * @param user user to check whether they exist.
      * @return if the user exists in the database or not.
      */
     public static boolean userExistsInDataBase(User user) {
         return !getDatabaseId(user).equals(NOT_FOUND_STRING);
+    }
+
+    /** Updates the name of the user in the database if it is found to not be the same as current Discord name.
+     * @param user User to check.
+     */
+    private static void updateUserName(User user) {
+        if (!user.getName().equals(getUserName(user))) {
+            executeQueryWithoutResult(String.format("UPDATE USERS SET name = %s WHERE id = %s", formatStringValue(user.getName()), formatStringValue(user.getId())));
+        }
     }
 
     /**

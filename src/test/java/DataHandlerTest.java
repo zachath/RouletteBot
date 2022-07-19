@@ -19,11 +19,12 @@ import java.util.List;
 
 /**
  * Tests the DataHandler and its connection to the database,
- * current coverage: Method 15/19; Line 30/72
+ * current coverage: Method 17/21; Line 34/74
  */
 public class DataHandlerTest {
     private static final String TEST_ROW_NAME = DataHandler.TEST_ROW_NAME;
-    private static final TestUser TEST_USER = new TestUser("ID:" + TEST_ROW_NAME, "NAME:" + TEST_ROW_NAME);
+    private static final String TEST_USER_NAME = "NAME:" + TEST_ROW_NAME;
+    private static final TestUser TEST_USER = new TestUser("ID:" + TEST_ROW_NAME, TEST_USER_NAME);
 
     /**
      * Since we need a row to operate on for testing, ensure that the specified is always present.
@@ -79,6 +80,15 @@ public class DataHandlerTest {
         assertFalse(DataHandler.addUser(TEST_USER));
     }
 
+    @Test
+    public void databaseUpdatesName() {
+        String anotherName = "another_name";
+        TEST_USER.setName(anotherName);
+        DataHandler.addUser(TEST_USER);
+        assertEquals(anotherName, DataHandler.getUserName(TEST_USER));
+        TEST_USER.setName(TEST_USER_NAME);
+    }
+
     /**
      * Class solely for testing purposes so that it can be passed to the methods as it implements the User interface.
      * Any method except getName() and getId() throws and exception.
@@ -86,10 +96,14 @@ public class DataHandlerTest {
     private static class TestUser implements User {
 
         private final String id;
-        private final String name;
+        private String name;
 
         public TestUser(String id, String name) {
             this.id = id;
+            this.name = name;
+        }
+
+        public void setName(String name) {
             this.name = name;
         }
 
